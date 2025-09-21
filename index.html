@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fitness IA Gratis</title>
+  <style>
+    body { background:#111; color:#eee; font-family:Arial; text-align:center; }
+    #chat { width:80%; margin:20px auto; background:#222; padding:15px; border-radius:10px; min-height:200px; }
+    .user { color:#0f0; margin:5px; text-align:left; }
+    .bot { color:#0af; margin:5px; text-align:left; }
+    input { padding:10px; border-radius:5px; width:70%; }
+    button { padding:10px; border:none; border-radius:5px; background:#0f0; color:#111; font-weight:bold; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>💪 Tu entrenador IA (Gratis)</h1>
+  <div id="chat"></div>
+  <input id="input" type="text" placeholder="Pregunta sobre fitness...">
+  <button onclick="sendMessage()">Enviar</button>
+
+  <script>
+    async function sendMessage() {
+      let input = document.getElementById("input");
+      let chat = document.getElementById("chat");
+      let userMsg = input.value;
+      chat.innerHTML += `<div class="user">Tú: ${userMsg}</div>`;
+      input.value = "";
+
+      let response = await fetch(
+        "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
+        {
+          method: "POST",
+          headers: { "Authorization": "Bearer TU_TOKEN_HF", "Content-Type": "application/json" },
+          body: JSON.stringify({ inputs: userMsg })
+        }
+      );
+
+      let data = await response.json();
+      let botMsg = data[0]?.generated_text || "Lo siento, no entendí.";
+      chat.innerHTML += `<div class="bot">Coach: ${botMsg}</div>`;
+    }
+  </script>
+</body>
+</html>
